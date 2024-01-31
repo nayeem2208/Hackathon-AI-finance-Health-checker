@@ -1,50 +1,160 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion} from "framer-motion";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import OpenAI from "openai";
 
 function Input() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [response,setResponse]=useState('')
+  const [finance, setFinance] = useState({
+    income: "",
+    savings: "",
+    debt: "",
+    expense: "",
+    investments: "",
+  });
 
-const submitHandler = () => {
-    
-    navigate('/result');
-}
+  const openai = new OpenAI({
+    apiKey: "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",
+    dangerouslyAllowBrowser: true,
+  });
+
+  const submitHandler = async () => {
+    try {
+      const chatCompletion = await openai.chat.completions.create({
+        messages: [
+          {
+            role: "user",
+            content: `Analyze financial data: ${JSON.stringify(finance)}`,
+          },
+        ],
+        model: "gpt-3.5-turbo",
+      });
+      const response = chatCompletion.data.choices[0].message.content;
+      setResponse(response);
+    navigate("/result", { state: { response } });
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  };
+
+  const handleIncomeChange = (e) => {
+    setFinance({ ...finance, income: e.target.value });
+  };
+
+  const handleSavingsChange = (e) => {
+    setFinance({ ...finance, savings: e.target.value });
+  };
+  const handleDebtChange = (e) => {
+    setFinance({ ...finance, debt: e.target.value });
+  };
+  const handleExpenseChange = (e) => {
+    setFinance({ ...finance, expense: e.target.value });
+  };
+  const handleInvestmentsChange = (e) => {
+    setFinance({ ...finance, investments: e.target.value });
+  };
+
   return (
     <div className="flex justify-center items-center h-screen ">
-      <div className="w-3/4  p-8 border rounded shadow " style={{backgroundColor:'255, 255, 255,0.8'}}>
+      <div
+        className="w-3/4  p-8 border rounded shadow "
+        style={{ backgroundColor: "255, 255, 255,0.8" }}
+      >
         <div className="mb-4 text-center ">
-          <motion.h1 whileHover={{scale:1.02}} className="text-3xl font-bold mb-4 text-white">Financial Analyzer</motion.h1>
+          <motion.h1
+            whileHover={{ scale: 1.02 }}
+            className="text-3xl font-bold mb-4 text-white"
+          >
+            Financial Analyzer
+          </motion.h1>
         </div>
         <div className="flex flex-col space-y-4">
           {/* Form Fields */}
           <div className="flex space-x-4">
-            <motion.button whileHover={{scale:1.02,backgroundColor:'#03ecfc'}} className="bg-cyan-500 text-white px-4 py-2 rounded w-32">Income</motion.button>
-            <motion.input whileHover={{scale:1.02}}  type="text" className="border px-4 py-2 flex-1 rounded" />
+            <motion.button
+              whileHover={{ scale: 1.02, backgroundColor: "#03ecfc" }}
+              className="bg-cyan-500 text-white px-4 py-2 rounded w-32"
+            >
+              Income
+            </motion.button>
+            <motion.input
+              whileHover={{ scale: 1.02 }}
+              type="text"
+              className="border px-4 py-2 flex-1 rounded"
+              onChange={handleIncomeChange}
+            />
           </div>
           <div className="flex space-x-4">
-            <motion.button className="bg-cyan-500 text-white px-4 py-2 rounded w-32" whileHover={{scale:1.02,backgroundColor:'#03ecfc'}} >Savings</motion.button>
-            <motion.input whileHover={{scale:1.02}} type="text" className="border px-4 py-2 flex-1 rounded" />
+            <motion.button
+              className="bg-cyan-500 text-white px-4 py-2 rounded w-32"
+              whileHover={{ scale: 1.02, backgroundColor: "#03ecfc" }}
+            >
+              Savings
+            </motion.button>
+            <motion.input
+              whileHover={{ scale: 1.02 }}
+              type="text"
+              className="border px-4 py-2 flex-1 rounded"
+              onChange={handleSavingsChange}
+            />
           </div>
           <div className="flex space-x-4">
-            <motion.button className="bg-cyan-500 text-white px-4 py-2 rounded w-32" whileHover={{scale:1.02,backgroundColor:'#03ecfc'}} >Debt</motion.button>
-            <motion.input whileHover={{scale:1.02}} type="text" className="border px-4 py-2 flex-1 rounded" />
+            <motion.button
+              className="bg-cyan-500 text-white px-4 py-2 rounded w-32"
+              whileHover={{ scale: 1.02, backgroundColor: "#03ecfc" }}
+            >
+              Debt
+            </motion.button>
+            <motion.input
+              whileHover={{ scale: 1.02 }}
+              type="text"
+              className="border px-4 py-2 flex-1 rounded"
+              onChange={handleDebtChange}
+            />
           </div>
           <div className="flex space-x-4">
-            <motion.button className="bg-cyan-500 text-white px-4 py-2 rounded w-32" whileHover={{scale:1.02,backgroundColor:'#03ecfc'}} >Expenses</motion.button>
-            <motion.input whileHover={{scale:1.02}} type="text" className="border px-4 py-2 flex-1 rounded" />
+            <motion.button
+              className="bg-cyan-500 text-white px-4 py-2 rounded w-32"
+              whileHover={{ scale: 1.02, backgroundColor: "#03ecfc" }}
+            >
+              Expenses
+            </motion.button>
+            <motion.input
+              whileHover={{ scale: 1.02 }}
+              type="text"
+              className="border px-4 py-2 flex-1 rounded"
+              onChange={handleExpenseChange}
+            />
           </div>
           <div className="flex space-x-4 ">
-            <motion.button className="bg-cyan-500 text-white px-4 py-2 rounded w-32" whileHover={{scale:1.02,backgroundColor:'#03ecfc'}} >Invest ments</motion.button>
-            <motion.input whileHover={{scale:1.02}} type="text " className="border px-4 py-2 flex-1 rounded rounded" />
+            <motion.button
+              className="bg-cyan-500 text-white px-4 py-2 rounded w-32"
+              whileHover={{ scale: 1.02, backgroundColor: "#03ecfc" }}
+            >
+              Investments
+            </motion.button>
+            <motion.input
+              whileHover={{ scale: 1.02 }}
+              type="text "
+              className="border px-4 py-2 flex-1 rounded rounded"
+              onChange={handleInvestmentsChange}
+            />
           </div>
-          <div className='flex justify-center'>
-          <motion.button whileHover={{scale:1.06,backgroundColor: '#1c9603'}} className="bg-green-500 flex justify-center text-white px-4 py-2 rounded w-32" onClick={submitHandler}>Submit</motion.button></div>
+          <div className="flex justify-center">
+            <motion.button
+              whileHover={{ scale: 1.06, backgroundColor: "#1c9603" }}
+              className="bg-green-500 flex justify-center text-white px-4 py-2 rounded w-32"
+              onClick={submitHandler}
+            >
+              Submit
+            </motion.button>
+          </div>
           {/* Add more fields here following the same pattern */}
         </div>
-        
       </div>
     </div>
-  )
+  );
 }
 
-export default Input
+export default Input;
